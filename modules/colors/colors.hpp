@@ -38,6 +38,9 @@
 
 // ~~~
 
+/*
+    Habilita el procesamiento virutal de la terminal (VT100) el cual tiene soporte ANSI
+*/
 void enableTerminalVirtualProcessing();
 
 #include "colors.cpp"
