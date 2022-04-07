@@ -11,3 +11,11 @@ int getWindowHeight() {
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 }
+
+int getWPos(int percentage){
+    return (percentage * getWindowWidth()) / 100;
+}
+
+int getHPos(int percentage){
+    return (percentage * getWindowHeight()) / 100;
+}

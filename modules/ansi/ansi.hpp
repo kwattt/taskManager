@@ -1,5 +1,6 @@
 #pragma once 
 #include <windows.h>
+#include <iostream>
 
 // https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 // https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
@@ -36,11 +37,17 @@
 #define STYLE_DIM "\x1b[2m"
 #define STYLE_RESETBRIGHTNESS "\x1b[22m"
 
+// clear screen
+#define STYLE_CLEAR "\x1B[2J\x1B[H"
 // ~~~
 
-/*
-    Habilita el procesamiento virutal de la terminal (VT100) el cual tiene soporte ANSI
-*/
+// Habilita el procesamiento virutal de la terminal (VT100) el cual tiene soporte ANSI
 void enableTerminalVirtualProcessing();
 
-#include "colors.cpp"
+// Coloca el cursor en posicion
+void setCursorPosition(int x, int y);
+
+// Coloca el cursor al final de la terminal
+void resetCursorPosition();
+
+#include "ansi.cpp"
