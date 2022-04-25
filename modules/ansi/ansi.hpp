@@ -37,6 +37,9 @@
 #define STYLE_DIM "\x1b[2m"
 #define STYLE_RESETBRIGHTNESS "\x1b[22m"
 
+#define STYLE_UP "\x1b[1A"
+#define STYLE_REMOVE_LINE "\x1b[2K"
+
 // clear screen
 #define STYLE_CLEAR "\x1B[2J\x1B[H"
 // ~~~

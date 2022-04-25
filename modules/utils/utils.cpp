@@ -19,3 +19,22 @@ int getWPos(int percentage){
 int getHPos(int percentage){
     return (percentage * getWindowHeight()) / 100;
 }
+
+std::string get_word(char optional)
+{
+    if(std::isspace(optional))
+        return "";
+    std::cout << optional;
+
+    std::string word;
+    word += optional;
+    char c = _getch();
+    while (c == ' ' || !std::isspace(c))
+    {
+        word.push_back(c);
+        std::cout << c;
+        c = _getch();
+    }
+    std::cout << c;
+    return word;
+}
