@@ -31,16 +31,62 @@ void idleScreen(){
     renderIdleScreen();
 
     while(true){
-        string input;
         resetCursorPosition();
         cout << STYLE_REMOVE_LINE;
+
+        std::string word;
         char c = _getch();
-        input = get_word(c);
-        if(input == "0"){
+
+        while (1)
+        {
+            // if arrow up or down
+            if (c == -32)
+            {
+                c = _getch();
+                if (c == 72)
+                {
+                    processOffset--;
+                    if (processOffset < 0)
+                        processOffset = 0;
+                    renderProcess();
+                    cout << "\b \b";
+                    break;
+                }
+                else if (c == 80)
+                {
+                    processOffset++;
+                    if (processOffset > processes.size() - 1)
+                        processOffset = processes.size() - 1;
+                    cout << "\b \b";
+                    renderProcess();
+                    break;
+                }
+            }
+
+            // if enter is pressed then break
+            if (c == 13)
+                break;
+        
+            // if backspace is pressed and there is a word in the buffer
+            if (c == 8 && word.size() > 0)
+            {
+                // remove the last character
+                word.pop_back();
+                // move the cursor back
+                cout << "\b \b";
+            }
+            else {
+                word.push_back(c);
+                std::cout << c;
+            }
+            c = _getch();
+        }
+
+        if(word == "0"){
             break;
         }
 
-        if(input == "2"){
+        if(word == "2"){
             addRandomProcess();
         }
     }
@@ -65,28 +111,33 @@ void addRandomProcess(){
 
 void renderProcess(){
     // clear process first
-    for(int i = 3; i < 80; i++){
-        setCursorPosition(0, getHPos(i));
-        cout << STYLE_REMOVE_LINE;
+
+    string ca;
+    for(int i = 0; i < getWPos(23)-1; i ++ )
+        ca += " ";
+
+    for(int i = 3; i < 70; i++){
+        setCursorPosition(0, getHPos(i)+2);
+        cout << ca;
     }
-    renderIdleScreen();
 
     int percentageStart = 19;
     // 20-80
 
     // iterate processes
-    for(int i = 0; i < processes.size(); i++){
-        if(percentageStart > 80)
+    int p = getHPos(percentageStart);
+    for(int i = processOffset; i < processes.size(); i++){
+        if(percentageStart > 75)
             break;
 
-        setCursorPosition(getWPos(3), getHPos(percentageStart));
+        setCursorPosition(getWPos(3), p);
         cout << "Proceso " << i;
         percentageStart+=6;
-
+        p+=1;
     }
 
-    resetCursorPosition();
     cout << STYLE_RESET;
+    resetCursorPosition();
 }
 
 void renderIdleScreen(){
