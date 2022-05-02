@@ -10,8 +10,11 @@ void idleScreen();
 void renderIdleScreen();
 void addRandomProcess();
 void renderProcess();
+void startAnim();
 
 int processOffset = 0;
+int frameActual = 300;
+int maxFrame = 0;
 
 struct process {
     int init;
@@ -90,14 +93,31 @@ void idleScreen(){
         if(word == "2"){
             addRandomProcess();
         }
+
+        if(word == "4"){
+            startAnim();
+        }
     }
 
     return;
 }
 
+void startAnim(){
+    frameActual = 0;
+
+    while(frameActual < maxFrame){
+        frameActual += 10;
+        // wait 200 ms
+        Sleep(100);
+        // render the process
+        renderProcess();
+    }
+    return;
+}
+
 void addRandomProcess(){
     int init = 1 + rand() % 150;
-    int end =  rand() % 150;
+    int end =  init + rand() % 150;
     int current = 0;
     int color = rand()%10;
 
@@ -106,6 +126,9 @@ void addRandomProcess(){
     p.end = end;
     p.current = current;
     p.color = color;
+
+    if(p.end > maxFrame)
+        maxFrame = p.end;
 
     processes.push_back(p);
 
@@ -147,12 +170,40 @@ void renderProcess(){
         cout << "Proceso " << i;
         percentageStart+=6;
 
-        setCursorPosition(getWPos(30), p);
-        cout << getIColor(processes[i].color) << ce;
+        // render process
+
+        // initPos = getwpos30 + ((process[i].end - process[i].end) * 100)/ce
+        // endPos = ((process[i].end * 100) / ce)
+        // renderSize = endPos-initPos
+
+        if(frameActual >= processes[i].init){
+            int initPos = getWPos(30) + ((processes[i].init * 100)/maxFrame)%(ce.length());
+            int endPos;
+            if (frameActual >= processes[i].end)
+                endPos =  getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
+            else if (frameActual < processes[i].end)
+                continue;
+            else {
+                endPos =  getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
+            }
+            int renderSize = endPos-initPos;
+
+        setCursorPosition(initPos, p);
+
+        string c;
+        for(int j = 0; j < renderSize; j++)
+            c += " ";
+
+        cout << getIColor(processes[i].color) << c;
+        }
+
         cout << STYLE_RESET;
 
         p+=1;
     }
+
+    setCursorPosition(0, getWindowHeight()-3);
+    cout << "Frame actual: " << frameActual << " de " << maxFrame;
 
     // percentage
 
@@ -187,7 +238,9 @@ void renderIdleScreen(){
     setCursorPosition(0, getWindowHeight()-1);
     cout << BG_RESET COLOR_CYAN "0: Salir 1: Agregar 2: Aleatorio 3: Eliminar 4: Iniciar";
 
-    resetCursorPosition();
     cout << STYLE_RESET;
+    resetCursorPosition();
+
+
     return;
 }
