@@ -17,6 +17,7 @@ struct process {
     int init;
     int end;
     int current;
+    int color;
 };
 vector<process> processes;
 
@@ -98,11 +99,13 @@ void addRandomProcess(){
     int init = 1 + rand() % 150;
     int end =  rand() % 150;
     int current = 0;
+    int color = rand()%10;
 
     process p;
     p.init = init;
     p.end = end;
     p.current = current;
+    p.color = color;
 
     processes.push_back(p);
 
@@ -116,13 +119,23 @@ void renderProcess(){
     for(int i = 0; i < getWPos(23)-1; i ++ )
         ca += " ";
 
+    string cf;
+    for(int i = 0; i < getWPos(98)-getWPos(30); i ++ )
+        cf += " ";
+
     for(int i = 3; i < 70; i++){
         setCursorPosition(0, getHPos(i)+2);
         cout << ca;
+        setCursorPosition(getWPos(30), getHPos(i)+2);
+        cout << cf;
     }
 
     int percentageStart = 19;
     // 20-80
+
+    string ce;
+    for(int i = 0; i < getWPos(98)-getWPos(30); i ++ )
+        ce += " ";
 
     // iterate processes
     int p = getHPos(percentageStart);
@@ -133,10 +146,16 @@ void renderProcess(){
         setCursorPosition(getWPos(3), p);
         cout << "Proceso " << i;
         percentageStart+=6;
+
+        setCursorPosition(getWPos(30), p);
+        cout << getIColor(processes[i].color) << ce;
+        cout << STYLE_RESET;
+
         p+=1;
     }
 
-    cout << STYLE_RESET;
+    // percentage
+
     resetCursorPosition();
 }
 

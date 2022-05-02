@@ -16,4 +16,6 @@ int getWPos(int percentage);
 // Devuelve la posicion en y de una porcentaje de la altura de la terminal
 int getHPos(int percentage);
 
+const char* getIColor(int i);
+
 #include "utils.cpp" 
