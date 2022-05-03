@@ -106,9 +106,9 @@ void startAnim(){
     frameActual = 0;
 
     while(frameActual < maxFrame){
-        frameActual += 10;
+        frameActual += 5;
         // wait 200 ms
-        Sleep(100);
+        Sleep(200);
         // render the process
         renderProcess();
     }
@@ -172,33 +172,31 @@ void renderProcess(){
 
         // render process
 
-        // initPos = getwpos30 + ((process[i].end - process[i].end) * 100)/ce
-        // endPos = ((process[i].end * 100) / ce)
-        // renderSize = endPos-initPos
-
-        if(frameActual >= processes[i].init){
-            int initPos = getWPos(30) + ((processes[i].init * 100)/maxFrame)%(ce.length());
-            int endPos;
-            if (frameActual >= processes[i].end)
-                endPos =  getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
-            else if (frameActual < processes[i].end)
-                continue;
-            else {
-                endPos =  getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
-            }
-            int renderSize = endPos-initPos;
+        int initPos = getWPos(30) + ((processes[i].init * 100)/maxFrame)%(ce.length());
+        int endPos = getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
 
         setCursorPosition(initPos, p);
 
-        string c;
-        for(int j = 0; j < renderSize; j++)
-            c += " ";
-
-        cout << getIColor(processes[i].color) << c;
+        if(frameActual >= processes[i].end){
+            cout << getIColor(processes[i].color);
+            for(int i = 0; i < endPos-initPos; i++){
+                cout << " ";
+            }
+            cout << STYLE_RESET;        
         }
+        else if (frameActual >= processes[i].init){
+            int initOffset = processes[i].init - frameActual;
+            int endOffset = processes[i].end;
 
-        cout << STYLE_RESET;
+            initOffset = ((initOffset * 100)/maxFrame) % (ce.length());
+            endOffset = ((endOffset * 100)/maxFrame) % (ce.length());
 
+            cout << getIColor(processes[i].color);
+            for(int i = 0; i < getWPos(30)-endOffset-initOffset+1; i++){
+                cout << " ";
+            }
+            cout << STYLE_RESET;
+        }
         p+=1;
     }
 
@@ -206,6 +204,7 @@ void renderProcess(){
     cout << "Frame actual: " << frameActual << " de " << maxFrame;
 
     // percentage
+    cout << STYLE_RESET;
 
     resetCursorPosition();
 }
