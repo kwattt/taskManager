@@ -13,8 +13,9 @@ void renderProcess();
 void startAnim();
 
 int processOffset = 0;
-int frameActual = 300;
+int frameActual = 3000;
 int maxFrame = 0;
+int frameSpeed = 5;
 
 struct process {
     int init;
@@ -106,18 +107,36 @@ void startAnim(){
     frameActual = 0;
 
     while(frameActual < maxFrame){
-        frameActual += 5;
+        if(GetKeyState(VK_UP) & 0x8000)
+        {
+            processOffset--;
+            if (processOffset < 0)
+                processOffset = 0;
+            renderProcess();
+            cout << "\b \b";
+        }
+        else if(GetKeyState(VK_DOWN) & 0x8000)
+        {
+            processOffset++;
+            if (processOffset > processes.size() - 1)
+                processOffset = processes.size() - 1;
+            cout << "\b \b";
+            renderProcess();
+        }
+
+        frameActual += frameSpeed;
         // wait 200 ms
         Sleep(200);
         // render the process
         renderProcess();
     }
+    fflush(stdin);
     return;
 }
 
 void addRandomProcess(){
-    int init = 1 + rand() % 150;
-    int end =  init + rand() % 150;
+    int init = rand() % 150;
+    int end = init + rand() % 150;
     int current = 0;
     int color = rand()%10;
 
@@ -172,31 +191,33 @@ void renderProcess(){
 
         // render process
 
-        int initPos = getWPos(30) + ((processes[i].init * 100)/maxFrame)%(ce.length());
-        int endPos = getWPos(30) + ((processes[i].end * 100)/maxFrame)%(ce.length());
+        int rangeOffset = getWPos(98) - getWPos(30);
+        // convert processes[i].init to rangeOffset
+        int init = getWPos(30) + (processes[i].init * rangeOffset / maxFrame);
+        int end = getWPos(30) + (processes[i].end * rangeOffset / maxFrame);
 
-        setCursorPosition(initPos, p);
+        setCursorPosition(init, p);
 
         if(frameActual >= processes[i].end){
             cout << getIColor(processes[i].color);
-            for(int i = 0; i < endPos-initPos; i++){
-                cout << " ";
-            }
+            if(end-init == 0) 
+                cout << "~";
+            for(int i = 0; i < end-init; i++)
+                cout << "~";
+
             cout << STYLE_RESET;        
         }
         else if (frameActual >= processes[i].init){
-            int initOffset = processes[i].init - frameActual;
-            int endOffset = processes[i].end;
 
-            initOffset = ((initOffset * 100)/maxFrame) % (ce.length());
-            endOffset = ((endOffset * 100)/maxFrame) % (ce.length());
-
-            cout << getIColor(processes[i].color);
-            for(int i = 0; i < getWPos(30)-endOffset-initOffset+1; i++){
-                cout << " ";
-            }
-            cout << STYLE_RESET;
+        int OldRange = (processes[i].end - processes[i].init);  
+        int NewRange = (end - init);
+        int fsize = (((frameActual - processes[i].init) * NewRange) / OldRange) + init;
+        cout << getIColor(processes[i].color);
+        for(int i = 0; i < fsize-init; i++)
+            cout << "-";
         }
+        cout << STYLE_RESET;        
+
         p+=1;
     }
 
